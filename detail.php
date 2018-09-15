@@ -1,3 +1,29 @@
+<?php 
+include_once"./common/mysql.php";
+
+$postId = $_GET['postId'];
+
+$conn = connect();
+
+$sql = "select p.title,p.created,p.content,p.views,p.likes,u.nickname,c.`name`
+         from posts as p
+        LEFT JOIN users as u on u.id = p.user_id
+        LEFT JOIN categories as c on c.id = p.category_id
+        where p.id = {$postId}";
+
+$res = query($conn,$sql);
+
+// print_r($res);
+
+$postData = $res[0];
+
+
+
+
+ ?>
+
+
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -23,19 +49,21 @@
         <div class="breadcrumb">
           <dl>
             <dt>当前位置：</dt>
-            <dd><a href="javascript:;">奇趣事</a></dd>
-            <dd>变废为宝！将手机旧电池变为充电宝的Better RE移动电源</dd>
+            <dd><a href="javascript:;"><?= $postData['name']?></a></dd>
+            <dd><?= $postData['title']?></dd>
           </dl>
         </div>
         <h2 class="title">
-          <a href="javascript:;">又现酒窝夹笔盖新技能 城里人是不让人活了！</a>
+          <a href="javascript:;"><?= $postData['title']?></a>
         </h2>
+
         <div class="meta">
-          <span>DUX主题小秘 发布于 2015-06-29</span>
-          <span>分类: <a href="javascript:;">奇趣事</a></span>
-          <span>阅读: (2421)</span>
-          <span>评论: (143)</span>
+          <span><?= $postData['nickname']?> 发布于 <?= $postData['created']?></span>
+          <span>分类: <a href="javascript:;"><?= $postData['name']?></a></span>
+          <span>阅读: (<?= $postData['views']?>)</span>
+          <span>评论: (<?= $postData['likes']?>)</span>
         </div>
+        <p class="paper"><?= $postData['content']?></p>
       </div>
       <div class="panel hots">
         <h3>热门推荐</h3>

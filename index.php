@@ -1,5 +1,7 @@
 <?php 
-$conn = mysqli_connect("localhost","root","root","alishow");
+include_once"./common/mysql.php";
+// $conn = mysqli_connect("localhost","root","root","alishow");
+$conn = connect();
 mysqli_set_charset($conn,"utf8");
 
 $sql = "select p.id,p.title,p.feature,p.created,p.content,p.views,p.likes,c.`name`,u.nickname,
@@ -10,12 +12,13 @@ left join users as u on u.id = p.user_id
 order by p.created DESC
 limit 0,5";
 
-$res = mysqli_query($conn,$sql);
+// $res = mysqli_query($conn,$sql);
 
-while($row = mysqli_fetch_assoc($res)){
-  $arr[] = $row;
-}
+// while($row = mysqli_fetch_assoc($res)){
+//   $arr[] = $row;
+// }
 
+$arr = query($conn,$sql);
 
 
 

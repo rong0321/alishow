@@ -1362,3 +1362,19 @@ img {
     display: none;
   }
 }
+
+.loadmore {
+  text-align: center;
+  padding: 50px 0;
+}
+.loadmore .btn {
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+.article .paper {
+  padding: 10px 15px ;
+  line-height: 30px ;
+
+}

@@ -1,26 +1,27 @@
 <?php 
-
-$conn = mysqli_connect("localhost","root","root","alishow");
+include_once"./common/mysql.php";
+// $conn = mysqli_connect("localhost","root","root","alishow");
+$conn = connect();
 
 mysqli_set_charset($conn,"utf8");
 
 $cate_sql = "select * from categories";
 
-$cate_res = mysqli_query($conn,$cate_sql);
+// $cate_res = mysqli_query($conn,$cate_sql);
 
-while($row = mysqli_fetch_assoc($cate_res)){
-  $cate_arr[] = $row;
-};
-
+// while($row = mysqli_fetch_assoc($cate_res)){
+//   $cate_arr[] = $row;
+// };
+$cate_arr = query($conn,$cate_sql);
 // print_r($arr);
 $rand_sql = "select id,title,feature,views from posts order by rand() limit 0,5";
 
-$rand_res = mysqli_query($conn,$rand_sql);
+// $rand_res = mysqli_query($conn,$rand_sql);
 
-while($row = mysqli_fetch_assoc($rand_res)){
-  $rand_arr[] = $row;
-}
-
+// while($row = mysqli_fetch_assoc($rand_res)){
+//   $rand_arr[] = $row;
+// }
+$rand_arr = query($conn,$rand_sql);
  ?>
 
 <div class="header">
@@ -31,7 +32,7 @@ while($row = mysqli_fetch_assoc($rand_res)){
         <li><a href="javascript:;"><i class="fa fa-fire"></i>会生活</a></li>
         <li><a href="javascript:;"><i class="fa fa-gift"></i>美奇迹</a></li> -->
         <?php foreach ($cate_arr as $value): ?>
-          <li><a href="javascript:;"><i class="fa <?= $value['classname']?>"></i><?= $value['name']?></a></li>
+          <li><a href="list.php?categoryId=<?= $value['id']?>"><i class="fa <?= $value['classname']?>"></i><?= $value['name']?></a></li>
         <?php endforeach; ?>
       </ul>
       <div class="search">
