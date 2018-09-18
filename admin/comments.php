@@ -1,3 +1,8 @@
+<?php 
+
+include_once"./checkLogin.php";
+
+ ?>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -96,8 +101,8 @@
       </table>
     </div>
   </div>
-
-  <div class="aside">
+  <?php include_once"./common/aside.php" ?>
+<!--   <div class="aside">
     <div class="profile">
       <img class="avatar" src="../static/uploads/avatar.jpg">
       <h3 class="name">布头儿</h3>
@@ -133,7 +138,7 @@
         </ul>
       </li>
     </ul>
-  </div>
+  </div> -->
 
   <script src="../static/assets/vendors/jquery/jquery.js"></script>
   <script src="../static/assets/vendors/bootstrap/js/bootstrap.js"></script>
