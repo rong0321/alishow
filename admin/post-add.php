@@ -124,5 +124,40 @@ include_once"./checkLogin.php";
   <script src="../static/assets/vendors/jquery/jquery.js"></script>
   <script src="../static/assets/vendors/bootstrap/js/bootstrap.js"></script>
   <script>NProgress.done()</script>
+
+  <script>
+    //此处不能用click事件,会出现文件还没上传事件就触发的情况,需要用change事件.
+    $("#feature").change(function(){
+      var file = this.files[0];
+      
+      var formdata = new FormData();
+      //ajax不能直接上传文件,需要通过FormData对象转成二进制对象上传.
+      formdata.append('file',file);  //append方法FormData(键,值);
+
+      $.ajax({
+        type:"post",
+        url:"./api/_uploadFile.php",
+        data:formdata,
+        dataType:"json",
+        contentType:false,
+        processData:false,
+        success:function(res){
+          if(res.code == 1){
+            $('.help-block').attr('src',res.src).show();
+          }
+        }
+
+
+
+      })
+
+
+
+
+
+    })
+  
+  
+  </script>
 </body>
 </html>

@@ -39,23 +39,25 @@ include_once"./checkLogin.php";
         <!-- show when multiple checked -->
         <a class="btn btn-danger btn-sm" href="javascript:;" style="display: none">批量删除</a>
         <form class="form-inline">
-          <select name="" class="form-control input-sm">
-            <option value="">所有分类</option>
-            <option value="">未分类</option>
+          <select id="category" name="" class="form-control input-sm">
+            <<!-- option value="">所有分类</option>
+            <option value="">未分类</option> -->
           </select>
-          <select name="" class="form-control input-sm">
-            <option value="">所有状态</option>
-            <option value="">草稿</option>
-            <option value="">已发布</option>
+          <select id="status" name="" class="form-control input-sm">
+            <option value="all">所有状态</option>
+            <option value="drafted">草稿</option>
+            <option value="published">已发布</option>
+            <option value="trashed">已作废</option>
           </select>
-          <button class="btn btn-default btn-sm">筛选</button>
+          <!-- <button class="btn btn-default btn-sm">筛选</button> -->
+          <input type="button" value="筛选" class="btn btn-default btn-sm" id="btn-filter">
         </form>
         <ul class="pagination pagination-sm pull-right">
-          <li><a href="#">上一页</a></li>
+          <!-- <li><a href="#">上一页</a></li>
           <li><a href="#">1</a></li>
           <li><a href="#">2</a></li>
           <li><a href="#">3</a></li>
-          <li><a href="#">下一页</a></li>
+          <li><a href="#">下一页</a></li> -->
         </ul>
       </div>
       <table class="table table-striped table-bordered table-hover">
@@ -71,7 +73,7 @@ include_once"./checkLogin.php";
           </tr>
         </thead>
         <tbody>
-          <tr>
+          <!-- <tr>
             <td class="text-center"><input type="checkbox"></td>
             <td>随便一个名称</td>
             <td>小小</td>
@@ -106,7 +108,7 @@ include_once"./checkLogin.php";
               <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
               <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
             </td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
     </div>
@@ -152,6 +154,126 @@ include_once"./checkLogin.php";
 
   <script src="../static/assets/vendors/jquery/jquery.js"></script>
   <script src="../static/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="../static/assets/vendors/art-template/template-web.js"></script>
   <script>NProgress.done()</script>
+  <!-- 文章模板 -->
+  <script type="text/template" id="postsTPL">
+    {{each data}}
+    <tr>
+      <td class="text-center"><input type="checkbox"></td>
+      <td>{{$value.title}}</td>
+      <td>{{$value.nickname}}</td>
+      <td>{{$value.name}}</td>
+      <td class="text-center">{{$value.created}}</td>
+      <td class="text-center">
+        {{if($value.status == 'drafted')}}
+          草稿
+        {{else if($value.status == 'published')}}
+          已发布
+        {{else if($value.status == 'trashed')}}
+          已作废
+        {{/if}}
+      </td>
+      <td class="text-center">
+        <a href="javascript:;" class="btn btn-default btn-xs">编辑</a>
+        <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+      </td>
+    </tr>
+    {{/each}}
+  </script>
+  <!-- 页签模板 -->
+  <script type="text/template" id="paginationTPL">
+    <li {{if(currentPage <= 1 )}} style="display: none;" {{/if}} data-page='{{currentPage - 1}}'><a href="javascript:;">上一页</a></li>
+    <li {{if(currentPage - 2 <= 0 )}} style="display: none;" {{/if}} data-page='{{currentPage - 2}}'><a href="javascript:;">{{currentPage - 2}}</a></li>
+    <li {{if(currentPage - 1 <= 0 )}} style="display: none;" {{/if}} data-page='{{currentPage - 1}}'><a href="javascript:;">{{currentPage - 1}}</a></li>
+    <li class="active"><a href="javascript:;">{{currentPage}}</a></li>
+    <li {{if(currentPage + 1 > maxPage )}} style="display: none;" {{/if}} data-page='{{currentPage + 1}}'><a href="javascript:;">{{currentPage + 1}}</a></li>
+    <li {{if(currentPage + 2 > maxPage )}} style="display: none;" {{/if}} data-page='{{currentPage + 2}}'><a href="javascript:;">{{currentPage + 2}}</a></li>
+    <li {{if(currentPage >= maxPage )}} style="display: none;" {{/if}} data-page='{{currentPage + 1}}'><a href="javascript:;">下一页</a></li>
+  </script>
+
+  <!-- 分类部分 -->
+  <script type="text/template" id="categoryTPL">
+    <option value="all">所有分类</option>
+    {{each data}}
+    <option value="{{$value.id}}">{{$value.name}}</option>
+    {{/each}}
+  </script>
+
+
+  <script>
+    //初始页面
+    var currentPage = 1;
+    var pageSize = 20;
+    var category = "all";
+    var status = "all";
+//将渲染页面做了封装
+function getPostsData(currentPage,pageSize,category,status){
+  $.ajax({
+      type:"post",
+      url:"./api/_getPosts.php",
+      data:{
+        currentPage:currentPage,
+        pageSize:pageSize,
+        category:category,
+        status:status
+      },
+      dataType:"json",
+      success:function(res){
+        if(res.code == 1){
+          var html = template("postsTPL",res);
+          // $(html).appendTo('tbody');
+          $('tbody').html(html);
+
+          var maxPage = Math.ceil(res.count/pageSize);
+          var paginationHtml = template("paginationTPL",{currentPage:currentPage,maxPage:maxPage});
+          $('.pagination').html(paginationHtml);
+
+        }
+      }
+    })
+}
+  //第一次请求页面
+  getPostsData(currentPage,pageSize,category,status);
+
+  //换页功能
+  $('.pagination').on('click','li',function(){
+    currentPage = parseInt($(this).attr('data-page'));
+    // alert(currentPage);
+    getPostsData(currentPage,pageSize,category,status);
+
+  })
+
+
+  //动态生成分类
+  $.ajax({
+    type:"get",
+    url:"./api/_getCategoriesData.php",
+    dataType:"json",
+    success:function(res){
+      if(res.code == 1){
+        var html = template("categoryTPL",res);
+        $('#category').html(html);
+      }
+    }
+
+
+
+
+  })
+
+
+  //筛选功能
+  $('#btn-filter').click(function(){
+    category = $('#category').val();
+    status = $('#status').val();
+    currentPage = 1; //点击的时候让currentPage重置为1,防止切换筛选条件之后,页数还是在当前页
+
+    getPostsData(currentPage,pageSize,category,status);
+
+
+    })
+
+  </script>
 </body>
 </html>
