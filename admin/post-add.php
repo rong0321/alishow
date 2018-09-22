@@ -76,7 +76,8 @@ include_once"./checkLogin.php";
             </select>
           </div>
           <div class="form-group">
-            <button class="btn btn-primary" type="submit">保存</button>
+            <!-- <button class="btn btn-primary" type="submit">保存</button> -->
+            <input id="btn-save" type="button" value="保存" class="btn btn-primary">
           </div>
         </div>
       </form>
@@ -123,6 +124,7 @@ include_once"./checkLogin.php";
 
   <script src="../static/assets/vendors/jquery/jquery.js"></script>
   <script src="../static/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="../static/assets/vendors/ckeditor/ckeditor.js"></script>
   <script>NProgress.done()</script>
 
   <script>
@@ -152,8 +154,19 @@ include_once"./checkLogin.php";
       })
 
 
+    })
+  
+    
+    CKEDITOR.replace('content');
 
+    $('#btn-save').click(function(){
+      alert('asd');
+      //收集之前要把富文本编辑器中的数据同步到textarea中
+      CKEDITOR.instances.content.updateElement();
 
+      var data = $('form').serialize();
+
+      console.log(data);
 
     })
   

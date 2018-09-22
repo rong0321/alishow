@@ -274,6 +274,7 @@ function getPostsData(currentPage,pageSize,category,status){
 
     })
 
+
   </script>
 </body>
 </html>

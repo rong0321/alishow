@@ -62,7 +62,7 @@ include_once"./checkLogin.php";
           </tr>
         </thead>
         <tbody>
-          <tr class="danger">
+          <!-- <tr class="danger">
             <td class="text-center"><input type="checkbox"></td>
             <td>大大</td>
             <td>楼主好人，顶一个</td>
@@ -97,7 +97,7 @@ include_once"./checkLogin.php";
               <a href="post-add.php" class="btn btn-warning btn-xs">驳回</a>
               <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
             </td>
-          </tr>
+          </tr> -->
         </tbody>
       </table>
     </div>
@@ -143,6 +143,80 @@ include_once"./checkLogin.php";
 
   <script src="../static/assets/vendors/jquery/jquery.js"></script>
   <script src="../static/assets/vendors/bootstrap/js/bootstrap.js"></script>
+  <script src="../static/assets/vendors/art-template/template-web.js"></script>
+  <script src="../static/assets/vendors/twbs-pagination/jquery.twbsPagination.js"></script>
   <script>NProgress.done()</script>
+
+  <script type="text/template" id="commentsTPL">
+    {{each data}}
+    <tr>
+      <td class="text-center"><input type="checkbox"></td>
+      <td>{{$value.author}}</td>
+      <td>{{$value.content}}</td>
+      <td>{{$value.title}}</td>
+      <td>{{$value.created}}</td>
+      <td>
+      {{if($value.status == "held" )}}
+      待审核
+      {{else if($value.status == "approved" )}}
+      准许
+      {{else if($value.status == "rejected" )}}
+      拒绝
+      {{else if($value.status == "trashed" )}}
+      回收站
+      {{/if}}
+      </td>
+      <td class="text-center">
+        <a href="post-add.php" class="btn btn-warning btn-xs">
+        {{if($value.status == "held" || $value.status == "trashed" )}}
+        批准
+        {{else if($value.status == "approved" || $value.status == "rejected" )}}
+        驳回
+        {{/if}}
+        </a>
+        <a href="javascript:;" class="btn btn-danger btn-xs">删除</a>
+      </td>
+    </tr>
+    {{/each}}
+  </script>
+
+  <script>
+    var currentPage = 1;
+    var pageSize = 10;
+  
+    function getComments(currentPage,pageSize){
+        $.ajax({
+        type:"post",
+        url:"./api/_getCommentsData.php",
+        data:{
+          'currentPage':currentPage,
+          'pageSize':pageSize
+        },
+        dataType:"json",
+        success:function(res){
+          if(res.code == 1){
+
+            var html = template("commentsTPL",res);
+
+            $('tbody').html(html);
+            
+            //分页插件
+            $('.pagination').twbsPagination({
+              totalPages: Math.ceil(res.count/pageSize),
+              visiblePages: 5,
+              onPageClick: function (event, page) {
+                getComments(page,pageSize);
+              }
+            });
+          }
+        }
+        })
+    }
+    //第一次加载页面渲染数据.
+    getComments(currentPage,pageSize);
+  
+    
+  
+  </script>
 </body>
 </html>
